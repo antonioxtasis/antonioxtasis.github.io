@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="favicon-menu.png">
+    <title>MOKAFÉ | Menú interactivo</title>
+    <meta name="description"
+          content="Explora el menú completo de MOKAFÉ: alimentos, bebidas frías y calientes, frappés. Filtra, busca y arma tu pedido.">
+    <meta name="theme-color" content="#2B1810">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Caveat:wght@600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <style>
+        /* ============ TOKENS (heredados de la identidad MOKAFÉ) ============ */
+        :root {
+            --coffee-900: #2B1810;
+            --coffee-700: #4A2E18;
+            --coffee-600: #6F4423;
+            --caramel-500: #C2873C;
+            --caramel-400: #D49C52;
+            --caramel-300: #E8C28A;
+            --cream-100: #FBF2E3;
+            --cream-50: #FFFBF4;
+            --matcha-500: #7C8F4C;
+            --matcha-600: #677A3D;
+            --matcha-100: #E6ECD8;
+            --gold-500: #EFA721;
+            --gold-100: #FCEBC7;
+            --ink: #2A1B10;
+            --muted: #7A6650;
+            --white: #ffffff;
+            --shadow-warm: 0 18px 40px -18px rgba(43, 24, 16, .35);
+            --shadow-soft: 0 10px 24px -14px rgba(43, 24, 16, .28);
+            --radius-lg: 22px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden; /* red de seguridad: ningún elemento puede generar scroll lateral */
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: var(--ink);
+            background: var(--cream-50);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 90px; /* espacio para el botón flotante */
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--matcha-500);
+            outline-offset: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 18px;
+        }
+
+        /* ============ HEADER ============ */
+        .top-header {
+            background: var(--coffee-900);
+            color: var(--cream-100);
+            position: sticky;
+            top: 0;
+            z-index: 80;
+            box-shadow: 0 2px 14px rgba(0, 0, 0, .18);
+        }
+
+        .top-header .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand .mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--caramel-300), var(--caramel-500) 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--coffee-900);
+            border: 2px solid var(--caramel-300);
+            flex-shrink: 0;
+        }
+
+        .brand .word {
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: .4px;
+            line-height: 1.1;
+        }
+
+        .brand .word small {
+            display: block;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            font-size: .95rem;
+            color: var(--caramel-300);
+        }
+
+        .cart-btn-header {
+            position: relative;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: var(--cream-100);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .cart-btn-header:hover {
+            background: rgba(255, 255, 255, .16);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--gold-500);
+            color: var(--coffee-900);
+            font-size: .68rem;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--coffee-900);
+            padding: 0 3px;
+        }
+
+        /* ============ HERO ============ */
+        .hero {
+            background: linear-gradient(180deg, var(--coffee-900) 0%, var(--coffee-700) 100%);
+            color: var(--cream-100);
+            padding: 30px 0 26px;
+            text-align: center;
+        }
+
+        .hero .eyebrow {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            color: var(--caramel-300);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero h1 {
+            margin: 4px 0 8px;
+            font-size: clamp(1.7rem, 6vw, 2.5rem);
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: var(--gold-500);
+        }
+
+        .hero p {
+            margin: 0 auto 18px;
+            max-width: 460px;
+            color: var(--caramel-300);
+            font-size: .92rem;
+        }
+
+        /* ============ BUSCADOR ============ */
+        .search-wrap-container {
+            padding-top: 14px;
+            padding-bottom: 16px;
+        }
+
+        .search-wrap {
+            max-width: 520px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-wrap i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--coffee-600);
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 13px 18px 13px 44px;
+            border-radius: 50px;
+            border: 1.5px solid var(--caramel-300);
+            background: var(--white);
+            font-size: .92rem;
+            color: var(--ink);
+            box-shadow: var(--shadow-soft);
+        }
+
+        #searchInput::placeholder {
+            color: #A7906F;
+        }
+
+        #searchInput:focus {
+            outline: 3px solid var(--gold-500);
+            outline-offset: 1px;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--coffee-600);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+        }
+
+        .clear-search.show {
+            display: flex;
+        }
+
+        /* ============ TABS / CHIPS ============ */
+        .tabs-sticky {
+            position: sticky;
+            top: var(--header-h, 71px);
+            z-index: 70;
+            background: var(--cream-50);
+            border-bottom: 1px solid rgba(43, 24, 16, .08);
+            padding: 0 0 12px;
+            box-shadow: 0 8px 16px -12px rgba(43, 24, 16, .18);
+        }
+
+        .tabs-scroll {
+            display: flex;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0 auto;
+            gap: 9px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 2px 0;
+        }
+
+        .tabs-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-chip {
+            flex-shrink: 0;
+            border: 1.5px solid var(--caramel-300);
+            background: var(--white);
+            color: var(--coffee-700);
+            padding: 9px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: .85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: .2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-chip i {
+            font-size: .85rem;
+        }
+
+        .tab-chip:hover {
+            border-color: var(--caramel-500);
+        }
+
+        .tab-chip.active {
+            background: var(--coffee-900);
+            border-color: var(--coffee-900);
+            color: var(--cream-100);
+        }
+
+        .subtab-scroll {
+            display: flex;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0 auto;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 10px 0 0;
+        }
+
+        .subtab-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subtab-chip {
+            flex-shrink: 0;
+            border: 1px dashed var(--matcha-500);
+            background: var(--matcha-100);
+            color: var(--matcha-600);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: .78rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .subtab-chip.active {
+            background: var(--matcha-500);
+            color: var(--white);
+            border-style: solid;
+        }
+
+        /* ============ RESULT META ============ */
+        .result-meta {
+            padding: 14px 0 4px;
+            font-size: .82rem;
+            color: var(--muted);
+        }
+
+        .result-meta strong {
+            color: var(--coffee-700);
+        }
+
+        /* ============ GRID ============ */
+        .menu-grid {
+            display: grid;
+            grid-template-columns:1fr;
+            gap: 18px;
+            padding: 14px 0 40px;
+        }
+
+        @media (min-width: 560px) {
+            .menu-grid {
+                grid-template-columns:repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 860px) {
+            .menu-grid {
+                grid-template-columns:repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1140px) {
+            .menu-grid {
+                grid-template-columns:repeat(4, 1fr);
+            }
+        }
+
+        .dish-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(14px);
+            animation: cardIn .45s ease forwards;
+            cursor: pointer;
+        }
+
+        @keyframes cardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dish-media {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: var(--cream-100);
+        }
+
+        .dish-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .5s ease;
+        }
+
+        .dish-card:hover .dish-media img {
+            transform: scale(1.06);
+        }
+
+        .dish-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(43, 24, 16, .78);
+            color: var(--cream-100);
+            font-size: .66rem;
+            font-weight: 700;
+            letter-spacing: .3px;
+            padding: 5px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
+        }
+
+        .dish-best {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold-500);
+            color: var(--coffee-900);
+            font-size: .66rem;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+        }
+
+        .dish-body {
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .dish-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--coffee-900);
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .dish-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .78rem;
+            color: var(--muted);
+        }
+
+        .dish-rating .stars {
+            color: var(--gold-500);
+            letter-spacing: 1px;
+            font-size: .72rem;
+        }
+
+        .dish-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 2px 0 2px;
+        }
+
+        .ing-chip {
+            background: var(--cream-100);
+            color: var(--coffee-700);
+            font-size: .7rem;
+            padding: 3px 9px;
+            border-radius: 50px;
+            border: 1px solid var(--caramel-300);
+        }
+
+        .ing-empty {
+            font-size: .74rem;
+            color: #B3A088;
+            font-style: italic;
+        }
+
+        .size-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 2px;
+        }
+
+        .size-chip {
+            border: 1.3px solid var(--caramel-400);
+            background: var(--cream-50);
+            color: var(--coffee-700);
+            font-size: .74rem;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .size-chip.active {
+            background: var(--caramel-500);
+            border-color: var(--caramel-500);
+            color: var(--white);
+        }
+
+        .dish-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px dashed var(--caramel-300);
+        }
+
+        .dish-price {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--coffee-900);
+        }
+
+        .dish-price small {
+            font-size: .68rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .add-btn {
+            background: var(--coffee-900);
+            color: var(--cream-100);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .95rem;
+            transition: .2s;
+            flex-shrink: 0;
+        }
+
+        .add-btn:hover {
+            background: var(--caramel-500);
+            transform: scale(1.07);
+        }
+
+        .add-btn.bounce {
+            animation: bump .35s ease;
+        }
+
+        @keyframes bump {
+            0% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(.82);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .no-results {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 50px 16px;
+            color: var(--muted);
+        }
+
+        .no-results i {
+            font-size: 2.2rem;
+            color: var(--caramel-300);
+            margin-bottom: 10px;
+        }
+
+        .no-results h3 {
+            margin: 0 0 6px;
+            color: var(--coffee-700);
+        }
+
+        /* ============ CARRITO FLOTANTE ============ */
+        .fab-cart {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 90;
+            background: var(--gold-500);
+            color: var(--coffee-900);
+            border: none;
+            border-radius: 50px;
+            padding: 13px 20px 13px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 14px 28px -10px rgba(43, 24, 16, .5);
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform .2s;
+        }
+
+        .fab-cart:hover {
+            transform: translateY(-3px);
+        }
+
+        .fab-cart .fab-icon {
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .fab-cart .fab-count {
+            position: absolute;
+            top: -10px;
+            right: -12px;
+            background: var(--coffee-900);
+            color: var(--cream-100);
+            font-size: .65rem;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab-cart.hide {
+            display: none;
+        }
+
+        .fab-total {
+            font-size: .92rem;
+        }
+
+        /* ============ DRAWER PEDIDO (estilo ticket) ============ */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(43, 24, 16, .5);
+            backdrop-filter: blur(2px);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s;
+        }
+
+        .cart-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: 420px;
+            background: var(--cream-50);
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform .32s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, .25);
+        }
+
+        .cart-drawer.open {
+            transform: translateX(0);
+        }
+
+        .cart-head {
+            background: var(--coffee-900);
+            color: var(--cream-100);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-head h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-close {
+            background: rgba(255, 255, 255, .1);
+            border: none;
+            color: var(--cream-100);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            /* borde tipo ticket perforado */
+            background-image: radial-gradient(circle, rgba(43, 24, 16, .12) 1.5px, transparent 1.5px);
+            background-size: 14px 14px;
+            background-position: 0 0;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 60px 10px;
+        }
+
+        .cart-empty i {
+            font-size: 2.4rem;
+            color: var(--caramel-300);
+            margin-bottom: 10px;
+        }
+
+        .cart-item {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-soft);
+            align-items: center;
+        }
+
+        .cart-item img {
+            width: 54px;
+            height: 54px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+            font-size: .88rem;
+            color: var(--coffee-900);
+            margin: 0 0 2px;
+        }
+
+        .cart-item-size {
+            font-size: .74rem;
+            color: var(--muted);
+            margin: 0 0 6px;
+        }
+
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid var(--caramel-400);
+            background: var(--cream-50);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .72rem;
+            color: var(--coffee-700);
+        }
+
+        .qty-val {
+            font-size: .85rem;
+            font-weight: 700;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .cart-item-price {
+            font-weight: 800;
+            color: var(--coffee-900);
+            font-size: .92rem;
+            white-space: nowrap;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #B3463A;
+            cursor: pointer;
+            font-size: .85rem;
+            padding: 4px;
+        }
+
+        .cart-foot {
+            border-top: 1.5px dashed var(--caramel-400);
+            padding: 16px 20px 20px;
+            background: var(--cream-100);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .cart-total-row span:first-child {
+            color: var(--muted);
+            font-size: .88rem;
+        }
+
+        .cart-total-row strong {
+            font-size: 1.3rem;
+            color: var(--coffee-900);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: #25D366;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: .92rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .checkout-btn:hover {
+            background: #1ebd59;
+        }
+
+        .checkout-btn:disabled {
+            background: #C9C2B6;
+            cursor: not-allowed;
+        }
+
+        .clear-cart {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: .78rem;
+            margin-top: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* ============ MODAL DE PRODUCTO (fullscreen) ============ */
+        .item-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 115;
+            background: var(--cream-50);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(16px);
+            transition: opacity .28s ease, transform .28s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .item-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .item-modal-scroll {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .item-modal-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            max-height: 48vh;
+            background: var(--cream-100);
+            overflow: hidden;
+        }
+
+        .item-modal-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-modal-close {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(43, 24, 16, .55);
+            backdrop-filter: blur(3px);
+            border: none;
+            color: var(--cream-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .item-modal-close:hover {
+            background: rgba(43, 24, 16, .75);
+        }
+
+        .item-modal-tag {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(43, 24, 16, .78);
+            color: var(--cream-100);
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .3px;
+            padding: 6px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+        }
+
+        .item-modal-best {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: var(--gold-500);
+            color: var(--coffee-900);
+            font-size: .72rem;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+        }
+
+        .item-modal-body {
+            padding: 22px 20px 0;
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .item-modal-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--coffee-900);
+            margin: 0 0 8px;
+        }
+
+        .item-modal-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .9rem;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .item-modal-rating .stars {
+            color: var(--gold-500);
+            letter-spacing: 2px;
+            font-size: .95rem;
+        }
+
+        .item-modal-section-title {
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 0 0 10px;
+        }
+
+        .item-modal-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 22px;
+        }
+
+        .item-modal-section {
+            margin-bottom: 22px;
+        }
+
+        .item-modal-sizes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .item-modal-size-chip {
+            border: 1.5px solid var(--caramel-400);
+            background: var(--white);
+            color: var(--coffee-700);
+            font-size: .85rem;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .item-modal-size-chip.active {
+            background: var(--caramel-500);
+            border-color: var(--caramel-500);
+            color: var(--white);
+        }
+
+        .item-modal-qty {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .item-modal-qty-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1.5px solid var(--caramel-400);
+            background: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--coffee-700);
+        }
+
+        .item-modal-qty-btn:hover {
+            background: var(--cream-100);
+        }
+
+        .item-modal-qty-val {
+            font-size: 1.1rem;
+            font-weight: 800;
+            min-width: 24px;
+            text-align: center;
+            color: var(--coffee-900);
+        }
+
+        .item-modal-footer {
+            position: sticky;
+            bottom: 0;
+            background: var(--cream-50);
+            border-top: 1px solid rgba(43, 24, 16, .08);
+            padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+            box-shadow: 0 -8px 20px -14px rgba(43, 24, 16, .25);
+        }
+
+        .item-modal-add-btn {
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+            background: var(--coffee-900);
+            color: var(--cream-100);
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: .95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .item-modal-add-btn:hover {
+            background: var(--caramel-500);
+        }
+
+        .item-modal-add-btn span.imab-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 90px;
+            transform: translate(-50%, 20px);
+            background: var(--coffee-900);
+            color: var(--cream-100);
+            padding: 11px 20px;
+            border-radius: 50px;
+            font-size: .85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-warm);
+            z-index: 120;
+            opacity: 0;
+            pointer-events: none;
+            transition: .3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .toast i {
+            color: var(--gold-500);
+        }
+
+        footer.mini-footer {
+            text-align: center;
+            padding: 30px 18px 16px;
+            color: var(--muted);
+            font-size: .8rem;
+        }
+
+        footer.mini-footer span {
+            font-family: 'Caveat', cursive;
+            font-size: 1.1rem;
+            color: var(--caramel-500);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: .001s !important;
+                transition-duration: .001s !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="top-header">
+    <div class="container row">
+        <div class="brand">
+            <div class="mark">M</div>
+            <div class="word">MOKAFÉ<small>Menú interactivo</small></div>
+        </div>
+        <button class="cart-btn-header" id="openCartHeader" aria-label="Abrir mi pedido">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span class="cart-count visually-hidden-if-empty" id="headerCount">0</span>
+        </button>
+    </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="container">
+        <span class="eyebrow"><i class="fa-solid fa-mug-hot"></i> Hecho para apapachar tu antojo</span>
+        <h1>Arma tu pedido <span>a tu manera</span></h1>
+        <p>Filtra por categoría, busca tu favorito y agrégalo al carrito. Así de fácil.</p>
+    </div>
+</section>
+
+<!-- ===== BUSCADOR + TABS (sticky) ===== -->
+<div class="tabs-sticky">
+    <div class="container search-wrap-container">
+        <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Busca por nombre o ingrediente… ej. matcha, jamón"
+                   aria-label="Buscar platillos">
+            <button class="clear-search" id="clearSearch" aria-label="Limpiar búsqueda"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+    <div class="container" id="tabsContainer">
+        <div class="tabs-scroll" id="mainTabs" role="tablist" aria-label="Categorías"></div>
+        <div class="subtab-scroll" id="subTabs" role="tablist" aria-label="Subcategorías"></div>
+    </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main class="container">
+    <p class="result-meta" id="resultMeta"></p>
+    <div class="menu-grid" id="menuGrid"></div>
+</main>
+
+<footer class="mini-footer">
+    <span>MOKAFÉ</span> · Menú interactivo de demostración · Guadalupe, N.L.
+</footer>
+
+<!-- ===== BOTÓN FLOTANTE ===== -->
+<button class="fab-cart" id="fabCart" aria-haspopup="dialog">
+    <span class="fab-icon"><i class="fa-solid fa-basket-shopping"></i><span class="fab-count"
+                                                                            id="fabCount">0</span></span>
+    <span class="fab-total" id="fabTotal">Mi pedido</span>
+</button>
+
+<!-- ===== DRAWER ===== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Mi pedido" aria-hidden="true">
+    <div class="cart-head">
+        <h2><i class="fa-solid fa-receipt"></i> Mi pedido</h2>
+        <button class="cart-close" id="closeCart" aria-label="Cerrar pedido"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cart-body" id="cartBody"></div>
+    <div class="cart-foot">
+        <div class="cart-total-row">
+            <span>Total (<span id="totalItemsLabel">0</span> productos)</span>
+            <strong id="totalPrice">$0</strong>
+        </div>
+        <button class="checkout-btn" id="checkoutBtn" disabled>
+            <i class="fa-brands fa-whatsapp"></i> Enviar pedido por WhatsApp
+        </button>
+        <button class="clear-cart" id="clearCartBtn">Vaciar pedido</button>
+    </div>
+</aside>
+
+<!-- ===== MODAL DE PRODUCTO (fullscreen) ===== -->
+<div class="item-modal" id="itemModal" role="dialog" aria-modal="true" aria-label="Detalle del producto"
+     aria-hidden="true">
+    <div class="item-modal-scroll">
+        <div class="item-modal-media">
+            <button class="item-modal-close" id="closeItemModal" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="modalImg" src="" alt="">
+            <span class="item-modal-tag" id="modalTag"></span>
+            <span class="item-modal-best" id="modalBest" style="display:none;"><i class="fa-solid fa-fire"></i> Más vendido</span>
+        </div>
+        <div class="item-modal-body">
+            <h2 class="item-modal-name" id="modalName"></h2>
+            <div class="item-modal-rating"><span class="stars" id="modalStars"></span> <span id="modalRatingVal"></span>/5
+            </div>
+
+            <div class="item-modal-section" id="modalIngredientsSection">
+                <p class="item-modal-section-title">Ingredientes</p>
+                <div class="item-modal-ingredients" id="modalIngredients"></div>
+            </div>
+
+            <div class="item-modal-section" id="modalSizesSection">
+                <p class="item-modal-section-title">Tamaño</p>
+                <div class="item-modal-sizes" id="modalSizes"></div>
+            </div>
+
+            <div class="item-modal-section">
+                <p class="item-modal-section-title">Cantidad</p>
+                <div class="item-modal-qty">
+                    <button class="item-modal-qty-btn" id="modalQtyMinus" aria-label="Quitar uno">−</button>
+                    <span class="item-modal-qty-val" id="modalQtyVal">1</span>
+                    <button class="item-modal-qty-btn" id="modalQtyPlus" aria-label="Agregar uno">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="item-modal-footer">
+        <button class="item-modal-add-btn" id="modalAddBtn">
+            <span class="imab-label"><i class="fa-solid fa-bag-shopping"></i> Agregar al pedido</span>
+            <span id="modalAddPrice">$0 MXN</span>
+        </button>
+    </div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg"></span></div>
+
+<script>
+    /* ======================================================================
+   DATOS DEL MENÚ — generados a partir del catálogo real de MOKAFÉ
+   ====================================================================== */
+    const MENU = [{
+            "id": 1,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Salados",
+            "nombre": "Bagel de jamón y queso",
+            "ingredientes": ["jamón", "queso"],
+            "tamaños": [{"label": "Único", "precio": 50}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "bagel,sandwich"
+        }, {
+            "id": 2,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Salados",
+            "nombre": "Biscuit de huevo, jamón y queso",
+            "ingredientes": ["huevo", "jamón", "queso"],
+            "tamaños": [{"label": "Único", "precio": 50}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "breakfast,sandwich"
+        }, {
+            "id": 3,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Salados",
+            "nombre": "Biscuit de huevo, tocino y queso",
+            "ingredientes": ["huevo", "tocino", "queso"],
+            "tamaños": [{"label": "Único", "precio": 50}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "breakfast,sandwich"
+        }, {
+            "id": 4,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Salados",
+            "nombre": "Chilaquiles (8am - 1pm)",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 130}],
+            "rating": 4.6,
+            "bestseller": true,
+            "imgTag": "mexicanfood,breakfast"
+        }, {
+            "id": 5,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Salados",
+            "nombre": "Molletes",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 75}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "breakfast,toast"
+        }, {
+            "id": 6,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Salados",
+            "nombre": "Croissant jamón y queso",
+            "ingredientes": ["jamón", "queso"],
+            "tamaños": [{"label": "Único", "precio": 50}],
+            "rating": 4.8,
+            "bestseller": true,
+            "imgTag": "croissant,sandwich"
+        }, {
+            "id": 7,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Croissant mantequilla",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 25}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "croissant,pastry"
+        }, {
+            "id": 8,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Muffin",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 30}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "muffin,bakery"
+        }, {
+            "id": 9,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Dona",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 25}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "donut,bakery"
+        }, {
+            "id": 10,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Chocolatín",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 30}],
+            "rating": 4.4,
+            "bestseller": false,
+            "imgTag": "chocolatecroissant,pastry"
+        }, {
+            "id": 11,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Rol de canela",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 55}],
+            "rating": 4.6,
+            "bestseller": true,
+            "imgTag": "cinnamonroll,bakery"
+        }, {
+            "id": 12,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Galleta",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 20}],
+            "rating": 4.7,
+            "bestseller": false,
+            "imgTag": "cookie,bakery"
+        }, {
+            "id": 13,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Biscuit integral",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 30}],
+            "rating": 4.3,
+            "bestseller": false,
+            "imgTag": "biscuit,bakery"
+        }, {
+            "id": 14,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Bagel",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 45}],
+            "rating": 4.3,
+            "bestseller": false,
+            "imgTag": "bagel,bakery"
+        }, {
+            "id": 15,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Empanadas",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 15}],
+            "rating": 4.3,
+            "bestseller": false,
+            "imgTag": "pastry,empanada"
+        }, {
+            "id": 16,
+            "grupo": "alimentos",
+            "grupoLabel": "Alimentos",
+            "subcategoria": "Dulces",
+            "nombre": "Brownie galleta",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 40}],
+            "rating": 4.3,
+            "bestseller": false,
+            "imgTag": "brownie,chocolate"
+        }, {
+            "id": 17,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Cold Brew",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 40}, {"label": "16oz", "precio": 50}, {"label": "20oz", "precio": 60}],
+            "rating": 4.4,
+            "bestseller": false,
+            "imgTag": "coldbrew,icedcoffee"
+        }, {
+            "id": 18,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Latte",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 50}, {"label": "16oz", "precio": 60}, {"label": "20oz", "precio": 70}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "icedlatte,coffee"
+        }, {
+            "id": 19,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Cajeta Latte",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 57}, {"label": "16oz", "precio": 68}, {"label": "20oz", "precio": 75}],
+            "rating": 4.5,
+            "bestseller": true,
+            "imgTag": "icedlatte,coffee"
+        }, {
+            "id": 20,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Caramel Macchiato",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 65}, {"label": "16oz", "precio": 70}, {"label": "20oz", "precio": 77}],
+            "rating": 4.9,
+            "bestseller": true,
+            "imgTag": "icedlatte,coffee"
+        }, {
+            "id": 21,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Café Moka",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 57}, {"label": "16oz", "precio": 68}, {"label": "20oz", "precio": 75}],
+            "rating": 4.6,
+            "bestseller": true,
+            "imgTag": "icedmocha,coffee"
+        }, {
+            "id": 22,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Café Moka Blanco",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 65}, {"label": "16oz", "precio": 70}, {"label": "20oz", "precio": 77}],
+            "rating": 4.8,
+            "bestseller": false,
+            "imgTag": "icedmocha,coffee"
+        }, {
+            "id": 23,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Con Café",
+            "nombre": "Espresso Tonic",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 55}, {"label": "16oz", "precio": 65}, {"label": "20oz", "precio": 75}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "icedcoffee,tonic"
+        }, {
+            "id": 24,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Chai",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 50}, {"label": "16oz", "precio": 58}, {"label": "20oz", "precio": 65}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "icedtea,chai"
+        }, {
+            "id": 25,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Matcha",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 50}, {"label": "16oz", "precio": 58}, {"label": "20oz", "precio": 65}],
+            "rating": 4.8,
+            "bestseller": true,
+            "imgTag": "matcha,tea"
+        }, {
+            "id": 26,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Taro",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 50}, {"label": "16oz", "precio": 58}, {"label": "20oz", "precio": 65}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "bubbletea,tea"
+        }, {
+            "id": 27,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Té Tisana",
+            "ingredientes": ["Tisana Ixil", "Tisana Irimbo", "Tisana La Huerta", "Tisana Meoqui", "Tisana Azoyú (Maracuyá)"],
+            "tamaños": [{"label": "12oz", "precio": 50}, {"label": "16oz", "precio": 58}, {"label": "20oz", "precio": 65}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "icedtea,fruittea"
+        }, {
+            "id": 28,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Chocolate",
+            "ingredientes": null,
+            "tamaños": [{"label": "12oz", "precio": 45}, {"label": "16oz", "precio": 52}, {"label": "20oz", "precio": 60}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "icedchocolate,drink"
+        }, {
+            "id": 29,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Soda Italiana",
+            "ingredientes": ["Fresa", "Mora Azul", "Curacao Azul", "Frambuesa", "Manzana Verde", "Maracuyá"],
+            "tamaños": [{"label": "Único", "precio": 65}],
+            "rating": 4.4,
+            "bestseller": false,
+            "imgTag": "italiansoda,drink"
+        }, {
+            "id": 30,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Aqua-Charge",
+            "ingredientes": ["Fresa", "Mora Azul", "Curacao Azul", "Frambuesa", "Manzana Verde", "Lichi"],
+            "tamaños": [{"label": "Único", "precio": 80}],
+            "rating": 4.8,
+            "bestseller": true,
+            "imgTag": "sparklingdrink,fruit"
+        }, {
+            "id": 31,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Botella de Agua",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 10}],
+            "rating": 4.7,
+            "bestseller": false,
+            "imgTag": "water,bottle"
+        }, {
+            "id": 32,
+            "grupo": "helados",
+            "grupoLabel": "Bebidas Frías",
+            "subcategoria": "Sin Café",
+            "nombre": "Agua Mineral",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 25}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "water,bottle"
+        }, {
+            "id": 33,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Con Café",
+            "nombre": "Americano",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 37}, {"label": "12oz", "precio": 44}, {"label": "16oz", "precio": 57}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "espresso,coffee"
+        }, {
+            "id": 34,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Con Café",
+            "nombre": "Capuchino/Latte",
+            "ingredientes": ["Jarabes +$10: Vainilla", "Vainilla sin azúcar", "Vainilla francesa", "Canela", "Avellana", "Crema irlandesa", "Caramelo", "Menta", "Cajeta"],
+            "tamaños": [{"label": "10oz", "precio": 42}, {"label": "12oz", "precio": 50}, {"label": "16oz", "precio": 60}],
+            "rating": 4.8,
+            "bestseller": true,
+            "imgTag": "cappuccino,latteart"
+        }, {
+            "id": 35,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Con Café",
+            "nombre": "Caramel Macchiato",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 60}, {"label": "12oz", "precio": 68}, {"label": "16oz", "precio": 75}],
+            "rating": 4.5,
+            "bestseller": true,
+            "imgTag": "macchiato,coffee"
+        }, {
+            "id": 36,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Con Café",
+            "nombre": "Café Moka",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 55}, {"label": "12oz", "precio": 60}, {"label": "16oz", "precio": 70}],
+            "rating": 4.9,
+            "bestseller": true,
+            "imgTag": "mocha,coffee"
+        }, {
+            "id": 37,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Con Café",
+            "nombre": "Café Moka Blanco",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 60}, {"label": "12oz", "precio": 68}, {"label": "16oz", "precio": 75}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "mocha,coffee"
+        }, {
+            "id": 38,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Sin Café",
+            "nombre": "Chai",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 50}, {"label": "12oz", "precio": 58}, {"label": "16oz", "precio": 65}],
+            "rating": 4.4,
+            "bestseller": false,
+            "imgTag": "chailatte,tea"
+        }, {
+            "id": 39,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Sin Café",
+            "nombre": "Matcha",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 50}, {"label": "12oz", "precio": 58}, {"label": "16oz", "precio": 65}],
+            "rating": 4.6,
+            "bestseller": true,
+            "imgTag": "matchalatte,tea"
+        }, {
+            "id": 40,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Sin Café",
+            "nombre": "Taro",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 50}, {"label": "12oz", "precio": 58}, {"label": "16oz", "precio": 65}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "taro,tea"
+        }, {
+            "id": 41,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Sin Café",
+            "nombre": "Chocolate MX",
+            "ingredientes": null,
+            "tamaños": [{"label": "10oz", "precio": 42}, {"label": "12oz", "precio": 48}, {"label": "16oz", "precio": 53}],
+            "rating": 4.3,
+            "bestseller": false,
+            "imgTag": "hotchocolate,drink"
+        }, {
+            "id": 42,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Sin Café",
+            "nombre": "Té de Infusión",
+            "ingredientes": ["Manzanilla", "Limón", "Hierbabuena", "Verde", "Fusión herbal", "Manzana canela"],
+            "tamaños": [{"label": "Único", "precio": 35}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "herbaltea,tea"
+        }, {
+            "id": 43,
+            "grupo": "calientes",
+            "grupoLabel": "Bebidas Calientes",
+            "subcategoria": "Sin Café",
+            "nombre": "Té Tisana",
+            "ingredientes": ["Mango-Piña", "Maracuyá-Manzana", "Arándano-Fresa-Manzana", "Fresa-Kiwi", "Moras", "Manzana canela"],
+            "tamaños": [{"label": "Único", "precio": 45}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "fruittea,tea"
+        }, {
+            "id": 44,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Café",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.7,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 45,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Caramelo",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 46,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Moka",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 47,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Moka Blanco",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 48,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Avellana",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.3,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 49,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Crema Irlandesa",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.7,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 50,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Canela",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.8,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 51,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Vainilla/Vainilla sin azúcar",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 52,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Vainilla Francesa",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 53,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Menta",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 54,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Con Café",
+            "nombre": "Espresso",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 80}],
+            "rating": 4.5,
+            "bestseller": false,
+            "imgTag": "coffeefrappe,frappuccino"
+        }, {
+            "id": 55,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Vainilla",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 56,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Fresa",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}, {"label": "Único", "precio": 70}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 57,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Chocolate",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 5.0,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 58,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Cookies & Cream",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 59,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Java Chip",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.9,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 60,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Chai",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.7,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 61,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Mango",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 62,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Mango Maracuyá",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.6,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }, {
+            "id": 63,
+            "grupo": "frappes",
+            "grupoLabel": "Frappés",
+            "subcategoria": "Sin Café",
+            "nombre": "Piña Colada",
+            "ingredientes": null,
+            "tamaños": [{"label": "Único", "precio": 70}],
+            "rating": 4.4,
+            "bestseller": false,
+            "imgTag": "fruitfrappe,milkshake"
+        }]
+    ;
+
+    /* Grupos principales para las pestañas */
+    const GROUPS = [
+        {id: 'todos', label: 'Todos', icon: 'fa-solid fa-border-all'},
+        {id: 'alimentos', label: 'Alimentos', icon: 'fa-solid fa-bagel'},
+        {id: 'helados', label: 'Bebidas Frías', icon: 'fa-solid fa-mug-saucer'},
+        {id: 'calientes', label: 'Bebidas Calientes', icon: 'fa-solid fa-mug-hot'},
+        {id: 'frappes', label: 'Frappés', icon: 'fa-solid fa-blender'}
+    ];
+
+    const IMG_BASE = (tag, id) => `https://loremflickr.com/600/450/${tag}?lock=${id}`;
+    const FALLBACK_IMG = `data:image/svg+xml;utf8,${encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="100%" height="100%" fill="#FBF2E3"/><text x="50%" y="50%" font-size="40" text-anchor="middle" fill="#C2873C" font-family="sans-serif">☕</text></svg>`
+    )}`;
+
+    /* ======================================================================
+   ESTADO
+   ====================================================================== */
+    let state = {
+        group: 'todos',
+        subcat: null,
+        query: '',
+        cart: {} // key: `${id}-${sizeLabel}` -> {id, nombre, img, label, precio, qty}
+    };
+
+    /* ======================================================================
+   RENDER: PESTAÑAS PRINCIPALES
+   ====================================================================== */
+    const mainTabsEl = document.getElementById('mainTabs');
+    GROUPS.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-chip' + (g.id === state.group ? ' active' : '');
+        btn.dataset.group = g.id;
+        btn.setAttribute('role', 'tab');
+        btn.innerHTML = `<i class="${g.icon}"></i> ${g.label}`;
+        btn.addEventListener('click', () => {
+            state.group = g.id;
+            state.subcat = null;
+            document.querySelectorAll('.tab-chip').forEach(t => t.classList.toggle('active', t.dataset.group === g.id));
+            renderSubTabs();
+            renderGrid();
+        });
+        mainTabsEl.appendChild(btn);
+    });
+
+    function renderSubTabs() {
+        const subTabsEl = document.getElementById('subTabs');
+        subTabsEl.innerHTML = '';
+        if (state.group === 'todos') {
+            subTabsEl.style.display = 'none';
+            return;
+        }
+        const subs = [...new Set(MENU.filter(m => m.grupo === state.group).map(m => m.subcategoria))];
+        if (subs.length <= 1) {
+            subTabsEl.style.display = 'none';
+            return;
+        }
+        subTabsEl.style.display = 'flex';
+        const allBtn = document.createElement('button');
+        allBtn.className = 'subtab-chip' + (state.subcat === null ? ' active' : '');
+        allBtn.textContent = 'Todas';
+        allBtn.addEventListener('click', () => {
+            state.subcat = null;
+            updateSubtabActive();
+            renderGrid();
+        });
+        subTabsEl.appendChild(allBtn);
+        subs.forEach(s => {
+            const b = document.createElement('button');
+            b.className = 'subtab-chip' + (state.subcat === s ? ' active' : '');
+            b.textContent = s;
+            b.dataset.sub = s;
+            b.addEventListener('click', () => {
+                state.subcat = s;
+                updateSubtabActive();
+                renderGrid();
+            });
+            subTabsEl.appendChild(b);
+        });
+    }
+
+    function updateSubtabActive() {
+        document.querySelectorAll('.subtab-chip').forEach(b => {
+            const isAll = b.textContent === 'Todas';
+            b.classList.toggle('active', isAll ? state.subcat === null : b.dataset.sub === state.subcat);
+        });
+    }
+
+    /* ======================================================================
+   FILTRO DE DATOS
+   ====================================================================== */
+    function getFiltered() {
+        const q = state.query.trim().toLowerCase();
+        return MENU.filter(item => {
+            if (state.group !== 'todos' && item.grupo !== state.group) return false;
+            if (state.subcat && item.subcategoria !== state.subcat) return false;
+            if (q) {
+                const inName = item.nombre.toLowerCase().includes(q);
+                const inIng = (item.ingredientes || []).some(i => i.toLowerCase().includes(q));
+                if (!inName && !inIng) return false;
+            }
+            return true;
+        });
+    }
+
+    /* ======================================================================
+   RENDER: GRID DE TARJETAS
+   ====================================================================== */
+    const gridEl = document.getElementById('menuGrid');
+    const resultMetaEl = document.getElementById('resultMeta');
+    let selectedSizeIndex = {}; // por item.id
+
+    function starString(rating) {
+        const full = Math.round(rating);
+        return '★'.repeat(full) + '☆'.repeat(5 - full);
+    }
+
+    function renderGrid() {
+        const list = getFiltered();
+        resultMetaEl.textContent = list.length
+            ? `Mostrando ${list.length} producto${list.length === 1 ? '' : 's'}`
+            : '';
+
+        if (list.length === 0) {
+            gridEl.innerHTML = `
+      <div class="no-results">
+        <i class="fa-solid fa-mug-saucer"></i>
+        <h3>No encontramos ese antojo</h3>
+        <p>Prueba con otra palabra o cambia de categoría.</p>
+      </div>`;
+            return;
+        }
+
+        gridEl.innerHTML = list.map((item, idx) => {
+            if (!(item.id in selectedSizeIndex)) selectedSizeIndex[item.id] = 0;
+            const sIdx = selectedSizeIndex[item.id];
+            const size = item.tamaños[sIdx];
+            const ingredientsHtml = item.ingredientes && item.ingredientes.length
+                ? item.ingredientes.slice(0, 4).map(i => `<span class="ing-chip">${i}</span>`).join('')
+                : `<span class="ing-empty">Receta de la casa</span>`;
+            const sizeRow = item.tamaños.length > 1
+                ? `<div class="size-row" data-id="${item.id}">
+          ${item.tamaños.map((t, i) => `<button class="size-chip ${i === sIdx ? 'active' : ''}" data-idx="${i}">${t.label}</button>`).join('')}
+         </div>`
+                : `<div class="size-row"><span class="size-chip active" style="cursor:default;">${size.label}</span></div>`;
+
+            return `
+    <article class="dish-card" style="animation-delay:${Math.min(idx * 0.03, 0.3)}s" data-id="${item.id}">
+      <div class="dish-media">
+        <img src="${IMG_BASE(item.imgTag, item.id)}" alt="${item.nombre}" loading="lazy"
+             onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
+        <span class="dish-tag">${item.subcategoria}</span>
+        ${item.bestseller ? `<span class="dish-best"><i class="fa-solid fa-fire"></i> Más vendido</span>` : ''}
+      </div>
+      <div class="dish-body">
+        <h3 class="dish-name">${item.nombre}</h3>
+        <div class="dish-rating"><span class="stars">${starString(item.rating)}</span> ${item.rating.toFixed(1)}/5</div>
+        <div class="dish-ingredients">${ingredientsHtml}</div>
+        ${sizeRow}
+        <div class="dish-footer">
+          <div class="dish-price">$${size.precio}<small> MXN</small></div>
+          <button class="add-btn" data-id="${item.id}" aria-label="Agregar ${item.nombre} al pedido">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+    </article>`;
+        }).join('');
+
+        // listeners de tamaño
+        gridEl.querySelectorAll('.size-row[data-id]').forEach(row => {
+            const id = parseInt(row.dataset.id);
+            row.querySelectorAll('.size-chip').forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedSizeIndex[id] = parseInt(chip.dataset.idx);
+                    renderGrid();
+                });
+            });
+        });
+
+        // listeners de agregar
+        gridEl.querySelectorAll('.add-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                addToCart(id);
+                btn.classList.remove('bounce');
+                void btn.offsetWidth;
+                btn.classList.add('bounce');
+            });
+        });
+
+        // listener para abrir el modal de detalle al hacer click en la tarjeta
+        gridEl.querySelectorAll('.dish-card').forEach(card => {
+            card.addEventListener('click', () => {
+                openItemModal(parseInt(card.dataset.id));
+            });
+        });
+    }
+
+    /* ======================================================================
+   BÚSQUEDA
+   ====================================================================== */
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearch');
+    let searchTimer;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimer);
+        clearBtn.classList.toggle('show', e.target.value.length > 0);
+        searchTimer = setTimeout(() => {
+            state.query = e.target.value;
+            renderGrid();
+        }, 180);
+    });
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        state.query = '';
+        clearBtn.classList.remove('show');
+        renderGrid();
+        searchInput.focus();
+    });
+
+    /* ======================================================================
+   CARRITO
+   ====================================================================== */
+    function addToCart(id, qty = 1) {
+        const item = MENU.find(m => m.id === id);
+        const sIdx = selectedSizeIndex[id] || 0;
+        const size = item.tamaños[sIdx];
+        const key = `${id}-${size.label}`;
+        if (state.cart[key]) {
+            state.cart[key].qty += qty;
+        } else {
+            state.cart[key] = {
+                id, nombre: item.nombre, imgTag: item.imgTag, label: size.label, precio: size.precio, qty: qty
+            };
+        }
+        showToast(`${item.nombre} agregado a tu pedido`);
+        renderCart();
+    }
+
+    function changeQty(key, delta) {
+        if (!state.cart[key]) return;
+        state.cart[key].qty += delta;
+        if (state.cart[key].qty <= 0) delete state.cart[key];
+        renderCart();
+    }
+
+    function removeItem(key) {
+        delete state.cart[key];
+        renderCart();
+    }
+
+    function clearCart() {
+        state.cart = {};
+        renderCart();
+    }
+
+    function cartEntries() {
+        return Object.entries(state.cart);
+    }
+
+    function cartTotalItems() {
+        return cartEntries().reduce((s, [, v]) => s + v.qty, 0);
+    }
+
+    function cartTotalPrice() {
+        return cartEntries().reduce((s, [, v]) => s + v.qty * v.precio, 0);
+    }
+
+    function renderCart() {
+        const entries = cartEntries();
+        const totalItems = cartTotalItems();
+        const totalPrice = cartTotalPrice();
+
+        // header + fab badges
+        document.getElementById('headerCount').textContent = totalItems;
+        document.getElementById('headerCount').classList.toggle('visually-hidden', totalItems === 0);
+        document.getElementById('fabCount').textContent = totalItems;
+        document.getElementById('fabTotal').textContent = totalItems > 0 ? `$${totalPrice} MXN` : 'Mi pedido';
+
+        // body
+        const body = document.getElementById('cartBody');
+        if (entries.length === 0) {
+            body.innerHTML = `
+      <div class="cart-empty">
+        <i class="fa-solid fa-mug-hot"></i>
+        <p>Tu pedido está vacío.<br>Agrega algo delicioso del menú ☕</p>
+      </div>`;
+        } else {
+            body.innerHTML = entries.map(([key, v]) => `
+      <div class="cart-item">
+        <img src="${IMG_BASE(v.imgTag, v.id)}" alt="${v.nombre}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
+        <div class="cart-item-info">
+          <p class="cart-item-name">${v.nombre}</p>
+          <p class="cart-item-size">${v.label}</p>
+          <div class="qty-row">
+            <button class="qty-btn" data-key="${key}" data-d="-1" aria-label="Quitar uno">−</button>
+            <span class="qty-val">${v.qty}</span>
+            <button class="qty-btn" data-key="${key}" data-d="1" aria-label="Agregar uno">+</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <span class="cart-item-price">$${v.qty * v.precio}</span>
+          <button class="remove-btn" data-key="${key}" aria-label="Eliminar ${v.nombre}"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+
+            body.querySelectorAll('.qty-btn').forEach(b => {
+                b.addEventListener('click', () => changeQty(b.dataset.key, parseInt(b.dataset.d)));
+            });
+            body.querySelectorAll('.remove-btn').forEach(b => {
+                b.addEventListener('click', () => removeItem(b.dataset.key));
+            });
+        }
+
+        document.getElementById('totalItemsLabel').textContent = totalItems;
+        document.getElementById('totalPrice').textContent = `$${totalPrice}`;
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        checkoutBtn.disabled = entries.length === 0;
+    }
+
+    /* ======================================================================
+   MODAL DE PRODUCTO (fullscreen)
+   ====================================================================== */
+    const itemModal = document.getElementById('itemModal');
+    let modalItemId = null;
+    let modalQty = 1;
+
+    function openItemModal(id) {
+        const item = MENU.find(m => m.id === id);
+        if (!item) return;
+        modalItemId = id;
+        modalQty = 1;
+        if (!(id in selectedSizeIndex)) selectedSizeIndex[id] = 0;
+        renderModal();
+        itemModal.classList.add('open');
+        itemModal.setAttribute('aria-hidden', 'false');
+        itemModal.querySelector('.item-modal-scroll').scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeItemModal() {
+        itemModal.classList.remove('open');
+        itemModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    function renderModal() {
+        const item = MENU.find(m => m.id === modalItemId);
+        if (!item) return;
+        const sIdx = selectedSizeIndex[item.id];
+        const size = item.tamaños[sIdx];
+
+        document.getElementById('modalImg').src = IMG_BASE(item.imgTag, item.id);
+        document.getElementById('modalImg').alt = item.nombre;
+        document.getElementById('modalImg').onerror = function () {
+            this.onerror = null;
+            this.src = FALLBACK_IMG;
+        };
+        document.getElementById('modalTag').textContent = item.subcategoria;
+        document.getElementById('modalBest').style.display = item.bestseller ? 'flex' : 'none';
+        document.getElementById('modalName').textContent = item.nombre;
+        document.getElementById('modalStars').textContent = starString(item.rating);
+        document.getElementById('modalRatingVal').textContent = item.rating.toFixed(1);
+
+        // ingredientes (lista completa, sin recortar a 4 como en la tarjeta)
+        const ingSection = document.getElementById('modalIngredientsSection');
+        const ingWrap = document.getElementById('modalIngredients');
+        if (item.ingredientes && item.ingredientes.length) {
+            ingSection.style.display = '';
+            ingWrap.innerHTML = item.ingredientes.map(i => `<span class="ing-chip">${i}</span>`).join('');
+        } else {
+            ingSection.style.display = '';
+            ingWrap.innerHTML = `<span class="ing-empty">Receta de la casa</span>`;
+        }
+
+        // tamaños
+        const sizesSection = document.getElementById('modalSizesSection');
+        const sizesWrap = document.getElementById('modalSizes');
+        if (item.tamaños.length > 1) {
+            sizesSection.style.display = '';
+            sizesWrap.innerHTML = item.tamaños.map((t, i) =>
+                `<button class="item-modal-size-chip ${i === sIdx ? 'active' : ''}" data-idx="${i}">${t.label}</button>`
+            ).join('');
+            sizesWrap.querySelectorAll('.item-modal-size-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    selectedSizeIndex[item.id] = parseInt(chip.dataset.idx);
+                    renderModal();
+                });
+            });
+        } else {
+            sizesSection.style.display = 'none';
+        }
+
+        document.getElementById('modalQtyVal').textContent = modalQty;
+        document.getElementById('modalAddPrice').textContent = `$${size.precio * modalQty} MXN`;
+    }
+
+    document.getElementById('modalQtyMinus').addEventListener('click', () => {
+        if (modalQty > 1) modalQty--;
+        renderModal();
+    });
+    document.getElementById('modalQtyPlus').addEventListener('click', () => {
+        modalQty++;
+        renderModal();
+    });
+    document.getElementById('modalAddBtn').addEventListener('click', () => {
+        if (modalItemId === null) return;
+        addToCart(modalItemId, modalQty);
+        showToast(`${MENU.find(m => m.id === modalItemId).nombre} agregado a tu pedido`);
+        closeItemModal();
+    });
+    document.getElementById('closeItemModal').addEventListener('click', closeItemModal);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && itemModal.classList.contains('open')) closeItemModal();
+    });
+
+    /* ======================================================================
+   DRAWER ABRIR/CERRAR
+   ====================================================================== */
+    const overlay = document.getElementById('cartOverlay');
+    const drawer = document.getElementById('cartDrawer');
+
+    function openCart() {
+        overlay.classList.add('open');
+        drawer.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeCart() {
+        overlay.classList.remove('open');
+        drawer.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('fabCart').addEventListener('click', openCart);
+    document.getElementById('openCartHeader').addEventListener('click', openCart);
+    document.getElementById('closeCart').addEventListener('click', closeCart);
+    overlay.addEventListener('click', closeCart);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeCart();
+    });
+    document.getElementById('clearCartBtn').addEventListener('click', clearCart);
+
+    /* Pedido simulado por WhatsApp: arma un mensaje de texto con el resumen */
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+        const entries = cartEntries();
+        if (entries.length === 0) return;
+        let msg = 'Hola MOKAFÉ, quiero pedir:%0A';
+        entries.forEach(([, v]) => {
+            msg += `• ${v.qty}x ${v.nombre} (${v.label}) - $${v.qty * v.precio}%0A`;
+        });
+        msg += `%0ATotal: $${cartTotalPrice()} MXN`;
+        window.open(`https://wa.me/528672746940?text=${msg}`, '_blank', 'noopener');
+    });
+
+    /* ======================================================================
+   TOAST
+   ====================================================================== */
+    let toastTimer;
+
+    function showToast(text) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    /* ======================================================================
+   STICKY HEADER HEIGHT
+   Calcula la altura real del header para que la barra de búsqueda + tabs
+   se quede pegada justo debajo de él, sin solaparse, en cualquier tamaño
+   de pantalla.
+   ====================================================================== */
+    function updateHeaderHeight() {
+        const header = document.querySelector('.top-header');
+        if (header) {
+            document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+        }
+    }
+
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    window.addEventListener('load', updateHeaderHeight);
+
+    /* ======================================================================
+   INIT
+   ====================================================================== */
+    renderSubTabs();
+    renderGrid();
+    renderCart();
+</script>
+</body>
+</html>
